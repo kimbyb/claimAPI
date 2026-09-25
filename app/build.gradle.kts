@@ -11,6 +11,7 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    alias(libs.plugins.ktlint)
 }
 
 repositories {
@@ -19,13 +20,13 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
-
+    testImplementation(libs.cucumber.java)
+    testImplementation(libs.cucumber.junit.platform)
+    testImplementation(libs.cucumber.picocontainer)
+    testImplementation(libs.junit.platform.suite)
+    testImplementation(libs.jackson.databind)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-    // This dependency is used by the application.
-    implementation(libs.guava)
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -40,7 +41,8 @@ application {
     mainClass = "com.example.claimapi.AppKt"
 }
 
-tasks.named<Test>("test") {
-    // Use JUnit Platform for unit tests.
+tasks.test {
     useJUnitPlatform()
+    systemProperty("claim.api.config", rootProject.file("config.properties").absolutePath)
+    System.getProperty("cucumber.filter.tags")?.let { systemProperty("cucumber.filter.tags", it) }
 }

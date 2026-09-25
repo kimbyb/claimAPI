@@ -4,10 +4,17 @@
 [versions]
 guava = "33.5.0-jre"
 junit-jupiter = "6.0.1"
+cucumber = "7.34.9"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
+cucumber-junit-platform = { module = "io.cucumber:cucumber-junit-platform-engine", version.ref = "cucumber" }
+cucumber-picocontainer = { module = "io.cucumber:cucumber-picocontainer", version.ref = "cucumber" }
+junit-platform-suite = { module = "org.junit.platform:junit-platform-suite", version = "6.0.1" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.20.1" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.4.0" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.1.2" }

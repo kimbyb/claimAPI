@@ -1,0 +1,317 @@
+- totalCount is always 0 on get
+- mandatory fields in the put?
+- why does post new clain automatically gets CLAIM_STATUS_APPROVED
+- get by Id payouts gives no info for non success requests
+- why do we have code 5 on the get of the deleted id {
+  "code": 5,
+  "message": "claim \"6ab6db9844289b6b59417551\" not found",
+  "details": []
+  }
+  1. PUT https://claimservice-api.emil.de/v1/claims
+     body: {
+     "title": "test",
+     "description": "test",
+     "claimantId": "99",
+     "amountCents": "3400",
+     "currency": "EUR"
+     }
+     Response:
+     {
+     "id": "6ab6de7744289b6b59417552",
+     "title": "test",
+     "description": "test",
+     "status": "CLAIM_STATUS_APPROVED",
+     "claimantId": "99",
+     "createdAt": "2026-09-25T20:49:59.944949799Z",
+     "updatedAt": "2026-09-25T20:49:59.944949799Z",
+     "amountCents": "3400",
+     "currency": "EUR"
+     }
+
+Why is status CLAIM_STATUS_APPROVED? Docs show
+A successful response.
+
+Example Value
+Model
+{
+"id": "string",
+"title": "string",
+"description": "string",
+"status": "CLAIM_STATUS_UNSPECIFIED",
+"claimantId": "string",
+"createdAt": "2026-09-25T20:51:25.049Z",
+"updatedAt": "2026-09-25T20:51:25.049Z",
+"amountCents": "string",
+"currency": "string"
+}
+
+2. https://claimservice-api.emil.de/v1/claims?statusFilter=CLAIM_STATUS_UNSPECIFIED
+   Shows all the values
+   {
+   "claims": [
+   {
+   "id": "Aleksandra-seed-002",
+   "title": "Water damage",
+   "description": "Pipe burst causing water damage",
+   "status": "CLAIM_STATUS_PENDING",
+   "claimantId": "user-bob",
+   "createdAt": "2026-09-23T14:14:27.658Z",
+   "updatedAt": "2026-09-23T14:14:27.658Z",
+   "amountCents": "50000",
+   "currency": "EUR"
+   },
+   {
+   "id": "Aleksandra-seed-003",
+   "title": "Fire damage",
+   "description": "Kitchen fire damage",
+   "status": "CLAIM_STATUS_UNDER_REVIEW",
+   "claimantId": "user-alice",
+   "createdAt": "2026-09-23T14:14:27.658Z",
+   "updatedAt": "2026-09-23T14:14:27.658Z",
+   "amountCents": "500001",
+   "currency": "EUR"
+   },
+   {
+   "id": "Aleksandra-seed-004",
+   "title": "Theft claim",
+   "description": "Laptop stolen from vehicle",
+   "status": "CLAIM_STATUS_APPROVED",
+   "claimantId": "user-carol",
+   "createdAt": "2026-09-23T14:14:27.658Z",
+   "updatedAt": "2026-09-23T14:14:27.658Z",
+   "amountCents": "250000",
+   "currency": "EUR"
+   },
+   {
+   "id": "Aleksandra-seed-005",
+   "title": "Flood damage",
+   "description": "Basement flooding after heavy rain",
+   "status": "CLAIM_STATUS_REJECTED",
+   "claimantId": "user-bob",
+   "createdAt": "2026-09-23T14:14:27.658Z",
+   "updatedAt": "2026-09-23T14:14:27.658Z",
+   "amountCents": "1500000",
+   "currency": "EUR"
+   },
+   {
+   "id": "6ab6de7744289b6b59417552",
+   "title": "test",
+   "description": "test",
+   "status": "CLAIM_STATUS_APPROVED",
+   "claimantId": "99",
+   "createdAt": "2026-09-25T20:49:59.944Z",
+   "updatedAt": "2026-09-25T20:49:59.944Z",
+   "amountCents": "3400",
+   "currency": "EUR"
+   }
+   ],
+   "nextPageToken": "",
+   "totalCount": 0
+   }
+
+Why is also total count 0?
+
+Same with using filter for total
+https://claimservice-api.emil.de/v1/claims?statusFilter=CLAIM_STATUS_PENDING
+{
+"claims": [
+{
+"id": "Aleksandra-seed-002",
+"title": "Water damage",
+"description": "Pipe burst causing water damage",
+"status": "CLAIM_STATUS_PENDING",
+"claimantId": "user-bob",
+"createdAt": "2026-09-23T14:14:27.658Z",
+"updatedAt": "2026-09-23T14:14:27.658Z",
+"amountCents": "50000",
+"currency": "EUR"
+}
+],
+"nextPageToken": "",
+"totalCount": 0
+}
+
+3. Post can accept it all. Also amount in cents should be numberic and not string.
+   If we send without cents we get an int error
+   "message": "validation error:\n - amount_cents: value must be greater than 0 [int64.gt]",
+
+For string
+{
+"code": 3,
+"message": "proto: (line 5:18): invalid value for int64 type: \"hello\"",
+"details": []
+}
+
+In Documentation is
+{
+"title": "string",
+"description": "string",
+"claimantId": "string",
+"amountCents": "string",
+"currency": "string"
+}
+
+and no specificaiton for mandatory fields
+
+No check for currency
+{
+"id": "6ab6dff044289b6b59417553",
+"title": "test",
+"description": "test",
+"status": "CLAIM_STATUS_APPROVED",
+"claimantId": "99",
+"createdAt": "2026-09-25T20:56:16.608139491Z",
+"updatedAt": "2026-09-25T20:56:16.608139491Z",
+"amountCents": "1",
+"currency": "EURoooooo"
+}
+
+4. Why on non exisitng Id its code 5?
+   https://claimservice-api.emil.de/v1/claims/6ab6dff044289b6b5941755
+   {
+   "code": 5,
+   "message": "claim \"6ab6dff044289b6b5941755\" not found",
+   "details": []
+   }
+
+5. this claim is pending
+   {
+   "claims": [
+   {
+   "id": "Aleksandra-seed-002",
+   "title": "Water damage",
+   "description": "Pipe burst causing water damage",
+   "status": "CLAIM_STATUS_PENDING",
+   "claimantId": "user-bob",
+   "createdAt": "2026-09-23T14:14:27.658Z",
+   "updatedAt": "2026-09-23T14:14:27.658Z",
+   "amountCents": "50000",
+   "currency": "EUR"
+   }
+   ],
+   "nextPageToken": "",
+   "totalCount": 0
+   }
+
+When getting by id payouts
+https://claimservice-api.emil.de/v1/claims/Aleksandra-seed-002/payouts
+
+{
+"payouts": []
+}
+
+gives noting.
+
+
+5. Post the same and it will create multiples with different id 
+https://claimservice-api.emil.de/v1/claims
+{
+  "title": "test",
+  "description": "test",
+  "claimantId": "99",
+  "amountCents": "1",
+  "currency": "EURoooooo"
+}
+{
+    "claims": [
+        {
+            "id": "6ab6de7744289b6b59417552",
+            "title": "test",
+            "description": "test",
+            "status": "CLAIM_STATUS_APPROVED",
+            "claimantId": "99",
+            "createdAt": "2026-09-25T20:49:59.944Z",
+            "updatedAt": "2026-09-25T20:49:59.944Z",
+            "amountCents": "3400",
+            "currency": "EUR"
+        },
+        {
+            "id": "6ab6dff044289b6b59417553",
+            "title": "test",
+            "description": "test",
+            "status": "CLAIM_STATUS_APPROVED",
+            "claimantId": "99",
+            "createdAt": "2026-09-25T20:56:16.608Z",
+            "updatedAt": "2026-09-25T20:56:16.608Z",
+            "amountCents": "1",
+            "currency": "EURoooooo"
+        },
+        {
+            "id": "6ab6e24f44289b6b59417554",
+            "title": "test",
+            "description": "test",
+            "status": "CLAIM_STATUS_APPROVED",
+            "claimantId": "99",
+            "createdAt": "2026-09-25T21:06:23.736Z",
+            "updatedAt": "2026-09-25T21:06:23.736Z",
+            "amountCents": "1",
+            "currency": "EURoooooo"
+        },
+        {
+            "id": "6ab6e25144289b6b59417555",
+            "title": "test",
+            "description": "test",
+            "status": "CLAIM_STATUS_APPROVED",
+            "claimantId": "99",
+            "createdAt": "2026-09-25T21:06:25.874Z",
+            "updatedAt": "2026-09-25T21:06:25.874Z",
+            "amountCents": "1",
+            "currency": "EURoooooo"
+        },
+        {
+            "id": "6ab6e25344289b6b59417556",
+            "title": "test",
+            "description": "test",
+            "status": "CLAIM_STATUS_APPROVED",
+            "claimantId": "99",
+            "createdAt": "2026-09-25T21:06:27.388Z",
+            "updatedAt": "2026-09-25T21:06:27.388Z",
+            "amountCents": "1",
+            "currency": "EURoooooo"
+        }
+    ],
+    "nextPageToken": "",
+    "totalCount": 0
+}
+
+6. Delete on un existing works and returns error
+https://claimservice-api.emil.de/v1/claims/6ab6db9844289b6b59417551
+{
+    "code": 5,
+    "message": "claim \"6ab6db9844289b6b59417551\" not found",
+    "details": []
+}
+
+7. Can create big numbers
+{
+  "title": "test",
+  "description": "test",
+  "claimantId": "990",
+  "amountCents": "1000000000000",
+  "currency": "EUR"
+}
+
+but in int64
+
+8. Cant create a claim with different status 
+https://claimservice-api.emil.de/v1/claims
+{
+  "title": "test",
+  "description": "test",
+  "claimantId": "990",
+  "amountCents": "1000000000000",
+  "currency": "EUR",
+  "status": "CLAIM_STATUS_PENDING"
+}
+
+{
+    "id": "6ab6e31c44289b6b59417558",
+    "title": "test",
+    "description": "test",
+    "status": "CLAIM_STATUS_APPROVED",
+    "claimantId": "990",
+    "createdAt": "2026-09-25T21:09:48.945048273Z",
+    "updatedAt": "2026-09-25T21:09:48.945048273Z",
+    "amountCents": "1000000000000",
+    "currency": "EUR"
+}

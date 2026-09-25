@@ -1,0 +1,3 @@
+# Copy this file to config.properties and add your challenge bearer token.
+baseUrl=https://claimservice-api.emil.de/v1/
+token=
