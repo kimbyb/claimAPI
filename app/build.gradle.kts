@@ -26,6 +26,8 @@ dependencies {
     testImplementation(libs.cucumber.picocontainer)
     testImplementation(libs.junit.platform.suite)
     testImplementation(libs.jackson.databind)
+    testImplementation(libs.rest.assured)
+    testImplementation(libs.awaitility)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -45,4 +47,8 @@ tasks.test {
     useJUnitPlatform()
     systemProperty("claim.api.config", rootProject.file("config.properties").absolutePath)
     System.getProperty("cucumber.filter.tags")?.let { systemProperty("cucumber.filter.tags", it) }
+}
+
+tasks.check {
+    dependsOn("ktlintCheck")
 }

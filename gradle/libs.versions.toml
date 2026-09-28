@@ -5,6 +5,8 @@
 guava = "33.5.0-jre"
 junit-jupiter = "6.0.1"
 cucumber = "7.34.9"
+rest-assured = "5.5.6"
+awaitility = "4.3.0"
 
 [libraries]
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
@@ -14,6 +16,8 @@ cucumber-junit-platform = { module = "io.cucumber:cucumber-junit-platform-engine
 cucumber-picocontainer = { module = "io.cucumber:cucumber-picocontainer", version.ref = "cucumber" }
 junit-platform-suite = { module = "org.junit.platform:junit-platform-suite", version = "6.0.1" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = "2.20.1" }
+rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
+awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.4.0" }

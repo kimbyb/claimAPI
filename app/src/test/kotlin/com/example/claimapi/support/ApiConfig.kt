@@ -13,13 +13,15 @@ data class ApiConfig(val baseUrl: String, val token: String?) {
                 Files.newInputStream(configPath).use { properties.load(it) }
             }
 
-            val baseUrl = System.getenv("CLAIM_API_BASE_URL")
-                ?.takeIf(String::isNotBlank)
-                ?: properties.getProperty("baseUrl")?.takeIf(String::isNotBlank)
-                ?: ClaimsApiClient.DEFAULT_BASE_URL
-            val token = System.getenv("CLAIM_API_TOKEN")
-                ?.takeIf(String::isNotBlank)
-                ?: properties.getProperty("token")?.takeIf(String::isNotBlank)
+            val baseUrl =
+                System.getenv("CLAIM_API_BASE_URL")
+                    ?.takeIf(String::isNotBlank)
+                    ?: properties.getProperty("baseUrl")?.takeIf(String::isNotBlank)
+                    ?: ClaimsApiClient.DEFAULT_BASE_URL
+            val token =
+                System.getenv("CLAIM_API_TOKEN")
+                    ?.takeIf(String::isNotBlank)
+                    ?: properties.getProperty("token")?.takeIf(String::isNotBlank)
 
             return ApiConfig(baseUrl.trimEnd('/'), token)
         }
