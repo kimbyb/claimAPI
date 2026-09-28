@@ -2,8 +2,6 @@
 
 ## API reference captured from Swagger
 
-These endpoint and model notes come from the Swagger screenshots. The `401 unauthorized` examples shown by Swagger's Try it out describe documented responses; they do not prove that every live route enforces authentication.
-
 ### Endpoints
 
 | Method | Path | Purpose / documented inputs |
@@ -27,7 +25,7 @@ These endpoint and model notes come from the Swagger screenshots. The `401 unaut
 
 ## Findings
 
-The findings below come from the live Cucumber run on 2026-09-28 unless marked exploratory. Reproduce a scenario with `./gradlew :app:test --tests com.example.claimapi.RunCucumberTest -Dcucumber.filter.tags='@tag'`, replacing `@tag` with the scenario tag listed below. The Swagger screenshots and challenge rules are the specification source. Severity uses P0 for broken money movement/invariants, P1 for incorrect core operations or response data, and P2 for smaller inconsistencies. Exact HTTP statuses and response bodies were not retained for every failure; uncertainty is noted instead of inferred.
+The findings below come from the live Cucumber run on 2026-09-28 unless marked exploratory. Reproduce a scenario with `./gradlew :app:test --tests com.example.claimapi.RunCucumberTest -Dcucumber.filter.tags='@tag'`, replacing `@tag` with the scenario tag listed below. Severity uses P0 for broken money movement/invariants, P1 for incorrect core operations or response data, and P2 for smaller inconsistencies. Exact HTTP statuses and response bodies were not retained for every failure; uncertainty is noted instead of inferred.
 
 _These are a mix of finding with automation and manual tests. The automation was basically prompts to cover needed things based on the requirements. Manual testing was made in Postman (initial versions of the findings could be found in notes file. Kept in on purpose). Those findings were given to Codex as reference of the bugs. Also you can find some commends in the cucumber feature files with exmplanations_
 
