@@ -35,6 +35,7 @@ _These are a mix of finding with automation and manual tests. The automation was
 - **Expected:** `totalCount` is consistent with the matching returned claims (at least one here).
 - **Actual:** `claims` contained the created claim, but `totalCount` was `0`. Manual Postman runs also returned seeded claims with zero count for unspecified and pending filters.
 - **Rule/convention:** Swagger includes `totalCount` in the list response. Zero contradicts a non-empty result and makes pagination/count displays unreliable.
+- **Covering test:** “A filtered list includes the created claim and reports a nonzero count” (`claims.feature`).
 
 ### F-02 — PATCH response is stale and omitted fields are cleared (P1)
 
@@ -42,6 +43,7 @@ _These are a mix of finding with automation and manual tests. The automation was
 - **Expected:** The response reflects supplied updates. Omitted fields in a PATCH remain unchanged under the usual PATCH convention.
 - **Actual:** The PATCH response returned the old title and description, while Get All contained the updated claim with its new values. The partial-PATCH case also found omitted title/description fields cleared. Exact HTTP status/body was not retained in the run summary.
 - **Rule/convention:** Swagger defines PATCH as an update operation. Stale values conflict with the requested update; clearing omitted fields violates the usual partial-update convention. Swagger does not spell out field-mask semantics, so the omission part is convention-based.
+- **Covering tests:** “User updates a claim and receives the updated fields” and “A partial claim patch omitting <field> preserves existing values or is rejected safely” (`claims.feature`).
 
 ### F-03 — Payout over manual-review limit stays PROCESSING (P0)
 
@@ -49,6 +51,7 @@ _These are a mix of finding with automation and manual tests. The automation was
 - **Expected:** Within 10 seconds it becomes `PAYOUT_STATUS_FAILED` with `failureReason: "manual_review_required"`.
 - **Actual:** It remained `PAYOUT_STATUS_PROCESSING` past 10 seconds.
 - **Rule:** Claims above 1,000,000 cents fail for manual review and payouts reach a terminal state within 10 seconds.
+- **Covering test:** “A claim above the manual review limit fails with the specified reason” (`payouts.feature`).
 
 ### F-04 — Payout at exactly 1,000,000 cents omits the deductible (P0)
 
@@ -56,6 +59,7 @@ _These are a mix of finding with automation and manual tests. The automation was
 - **Expected:** The manual-review rule applies only above 1,000,000, so payout amount is `1,000,000 - 50,000 = 950,000` cents.
 - **Actual:** The payout amount was `1,000,000` cents. A terminal payout was observed, but the amount assertion failed.
 - **Rule:** Payout amount is claim amount minus 50,000 cents; manual review is for amounts above 1,000,000.
+- **Covering test:** “The exact manual review limit does not require manual review” (`payouts.feature`).
 
 ### F-05 — Unchanged APPROVED update creates a duplicate payout (P0)
 
@@ -63,6 +67,7 @@ _These are a mix of finding with automation and manual tests. The automation was
 - **Expected:** No new payout because status did not transition into approved.
 - **Actual:** A second payout appeared after the unchanged-status update.
 - **Rule:** One payout per approval; an update that leaves status unchanged creates none.
+- **Covering test:** “Updating a claim without changing its status does not create another payout” (`payouts.feature`).
 
 ### F-06 — Cancellation does not reach CANCELLED within 10 seconds (P0)
 
@@ -70,6 +75,7 @@ _These are a mix of finding with automation and manual tests. The automation was
 - **Expected:** The in-flight payout becomes `PAYOUT_STATUS_CANCELLED` within the settlement window.
 - **Actual:** Both cases timed out with the payout still `PAYOUT_STATUS_PROCESSING`, including reruns of each scenario individually.
 - **Rule:** Leaving approved or deleting the claim before settlement cancels its payout.
+- **Covering tests:** “Leaving approved cancels an in-flight payout” and “Deleting an approved claim cancels its in-flight payout” (`payouts.feature`).
 
 ### Exploratory observation — REJECTED to APPROVED
 
@@ -110,15 +116,6 @@ These are user-provided observations. They strengthen some items above; keep the
 4. **Error codes and mandatory fields** — capture HTTP status and compare payload semantics with the published contract. `NOT_FOUND` for an unknown claim is reasonable; missing `amountCents` and invalid int64 already appear to be rejected.
 
 Repeated `POST` creating a new resource each time is not currently a candidate defect. The most valuable remaining manual check is to inspect payouts for one newly created approved claim and one claim above 1000000 cents, then exercise a PATCH that changes a claim into approved and one that leaves it approved.
-
-## Challenge specification reminders
-
-- A payout is created only when a claim moves into `CLAIM_STATUS_APPROVED`.
-- Payout amount is `amountCents - 50000`; no payout is created when the amount is at or below 50000 cents.
-- Payout settles asynchronously and reaches `PAID`, `FAILED`, or `CANCELLED` within 10 seconds.
-- One payout per approval; an update that leaves status unchanged creates none.
-- Claims above 1000000 cents fail with `failureReason: "manual_review_required"`.
-- If a claim leaves approved or is deleted before settlement, its payout is cancelled.
 
 ## Cucumber test framework
 
